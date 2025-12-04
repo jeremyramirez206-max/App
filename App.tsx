@@ -20,12 +20,10 @@ const DIFFICULTY_LEVELS = {
 
 const { width, height } = Dimensions.get("window");
 
-
 const boardWidth = width; 
 const boardHeight = height * 0.85; 
 const numCols = Math.floor(boardWidth / GRID_SIZE);
 const numRows = Math.floor(boardHeight / GRID_SIZE);
-
 
 export default function App() {
   const [screen, setScreen] = useState("menu"); 
@@ -74,7 +72,6 @@ export default function App() {
       if (direction === "LEFT") head.x -= 1;
       if (direction === "RIGHT") head.x += 1;
 
-    
       if (
         head.x < 0 || head.y < 0 ||
         head.x >= numCols || head.y >= numRows ||
@@ -86,7 +83,6 @@ export default function App() {
 
       newSnake.unshift(head);
 
-     
       if (head.x === food.x && head.y === food.y) {
         setScore((prev) => prev + SCORE_PER_FOOD);
         generateFood(newSnake);
@@ -102,17 +98,15 @@ export default function App() {
     const newSpeed = selectedSpeed !== undefined ? selectedSpeed : speed;
     setSpeed(newSpeed); 
     
-    setSnake([
+    const initialSnake = [
       { x: Math.floor(numCols/2), y: Math.floor(numRows/2) },
       { x: Math.floor(numCols/2), y: Math.floor(numRows/2) + 1 },
       { x: Math.floor(numCols/2), y: Math.floor(numRows/2) + 2 },
-    ]);
+    ];
+
+    setSnake(initialSnake);
     setDirection("UP");
-    generateFood([
-      { x: Math.floor(numCols/2), y: Math.floor(numRows/2) },
-      { x: Math.floor(numCols/2), y: Math.floor(numRows/2) + 1 },
-      { x: Math.floor(numCols/2), y: Math.floor(numRows/2) + 2 },
-    ]);
+    generateFood(initialSnake);
     setScore(0);
     setIsPlaying(true);
     setIsPaused(false); 
@@ -124,7 +118,7 @@ export default function App() {
     clearInterval(intervalRef.current);
     setIsPlaying(false);
     setIsPaused(false); 
-    setGameOverText(💀 Game Over! Puntaje: ${score});
+    setGameOverText(`💀 Game Over! Puntaje: ${score}`);
   };
 
   const togglePause = () => {
@@ -137,7 +131,6 @@ export default function App() {
     setIsPaused(false);
   };
   
-
   const handleTouchStart = (e) => {
     if (isPlaying && !isPaused) {
         const { locationX, locationY } = e.nativeEvent;
@@ -165,14 +158,10 @@ export default function App() {
     }
   };
 
-
-
-
   const renderGameScreen = () => (
     <View style={styles.gameContainer}>
       <StatusBar barStyle="dark-content" backgroundColor="#c7e9b0" />
 
-      {/* Encabezado con Puntaje y Pausa */}
       <View style={styles.header}>
         <View style={styles.headerItem}>
             <Text style={styles.headerIcon}>Ⓒ</Text>
@@ -187,30 +176,20 @@ export default function App() {
         </View>
       </View>
 
-      {/* Tablero del Juego (Pantalla Completa) */}
       <View
         style={[styles.board, { width: boardWidth, height: boardHeight }]}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Serpiente */}
         {snake.map((segment, index) => (
           <View
             key={index}
             style={[
-          
               { left: segment.x * GRID_SIZE, top: segment.y * GRID_SIZE },
-              
-       
               styles.snakeSegmentBase,
-
-             
-              index === 0 
-                ? [styles.snakeHead, styles[head_${direction}]] 
-                : styles.snakeBody 
+              index === 0 ? [styles.snakeHead, styles[`head_${direction}`]] : styles.snakeBody
             ]}
           >
-            {/* ✅ Ojos/Detalles de la cabeza (SOLO si es la cabeza) */}
             {index === 0 && (
                 <View style={styles.eyeContainer}>
                     <View style={styles.eye} />
@@ -220,7 +199,6 @@ export default function App() {
           </View>
         ))}
 
-        {/* Comida (Manzana) */}
         <Text
           style={[
             styles.foodIcon,
@@ -230,9 +208,6 @@ export default function App() {
           🍎
         </Text>
 
-        {/* --- LÓGICA DE SUPERPOSICIÓN CENTRAL --- */}
-
-        {/* 1. Superposición de Game Over */}
         {(!isPlaying && gameOverText !== "") && (
           <View style={styles.overlayCentered}>
               <Text style={styles.gameOverTextBig}>{gameOverText}</Text>
@@ -255,7 +230,6 @@ export default function App() {
           </View>
         )}
         
-        {/* 2. Superposición de Pausa */}
         {(isPlaying && isPaused) && (
           <View style={styles.overlayCentered}>
               <Text style={styles.pauseTextBig}>Juego Pausado</Text>
@@ -330,8 +304,6 @@ export default function App() {
     </SafeAreaView>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -412,6 +384,24 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.1)',
   },
+  headerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerIcon: {
+    fontSize: 20,
+    marginRight: 8,
+    color: '#2f6f39',
+  },
+  headerTime: {
+    fontSize: 16,
+    color: '#1e4a28',
+  },
+  headerScore: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1e4a28',
+  },
   pauseButton: {
     padding: 5,
     borderRadius: 30,
@@ -460,7 +450,6 @@ const styles = StyleSheet.create({
   head_LEFT: { transform: [{ rotate: '-90deg' }] },
   head_RIGHT: { transform: [{ rotate: '90deg' }] },
 
-  
   eyeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -475,7 +464,6 @@ const styles = StyleSheet.create({
     borderColor: 'black',
   },
 
-  
   foodIcon: { 
     fontSize: GRID_SIZE * 0.8, 
     position: "absolute",
